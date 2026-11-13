@@ -258,6 +258,10 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 .chips button:hover{border-color:var(--yellow)}
 .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 .pnav{display:flex;justify-content:space-between;gap:12px;border-top:1px solid var(--line);padding-top:16px}
+.panel{grid-template-columns:minmax(0,1fr)}
+.pnav .btn{min-width:0}
+#nextBtn{white-space:normal;text-align:center;line-height:1.2;padding-block:8px}
+@media (max-width:520px){.pnav .btn{padding-inline:16px;font-size:15px}#nextBtn{flex:1 1 auto}}
 .result{display:grid;gap:12px;padding:15px;border-radius:var(--r-md);border:1px solid var(--line-2);background:rgba(255,255,255,.04)}
 .result[data-kind="ok"]{background:var(--ok-soft);border-color:rgba(94,224,143,.3)}
 .result[data-kind="err"]{background:var(--err-soft);border-color:rgba(255,42,31,.3)}
