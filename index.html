@@ -49,6 +49,7 @@
   --blur:blur(22px) saturate(1.5);
 }
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--text);font:400 16px/1.6 var(--f-body);-webkit-font-smoothing:antialiased;overflow-x:hidden}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--bg)}
@@ -209,7 +210,7 @@ main,footer,.nav,.ticker{position:relative;z-index:1}
 .sofar dd.empty{font-weight:400;color:var(--text-3)}
 .sug{margin-top:12px;font-size:14.5px;color:var(--text-2)}
 .sug b{color:var(--yellow)}
-.panel{border:1px solid var(--line-2);border-radius:22px;background:rgba(255,255,255,.035);padding:clamp(16px,2.6vw,28px);display:grid;gap:18px;min-width:0}
+.panel{scroll-margin-top:88px;border:1px solid var(--line-2);border-radius:22px;background:rgba(255,255,255,.035);padding:clamp(16px,2.6vw,28px);display:grid;gap:18px;min-width:0}
 .stepbar{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
 .stepbar button{display:grid;gap:7px;justify-items:start;min-height:44px;padding:0;border:0;background:none;font:700 11px/1.2 var(--f-mono);letter-spacing:.04em;text-transform:uppercase;color:var(--text-3);cursor:pointer;text-align:left}
 .stepbar button i{display:block;width:100%;height:3px;border-radius:99px;background:var(--line-2);overflow:hidden;position:relative}
@@ -917,7 +918,7 @@ document.querySelectorAll('canvas[data-sky]').forEach(function(cv){new Mini(cv,+
   var STEPS=['Event','Place','Date','Guests','Budget','Contact'];
   var GV=[25,50,75,100,150,200,250,300,400,500,600,700,800,1000,1200,1500,2000];
   var S={event:'',city:'Lahore',venue:'',date:'',time:'Evening',guests:200,budget:'',pkg:'Not sure yet'};
-  var cur=0,maxSeen=0,panels=document.querySelectorAll('.stp'),bar=$('stepbar'),sending=false,sent=false;
+  var cur=0,maxSeen=0,panels=document.querySelectorAll('.stp'),bar=$('stepbar'),sending=false,sent=false,ready=false;
   STEPS.forEach(function(n,i){var b=document.createElement('button');b.type='button';b.innerHTML='<i></i>'+n;b.setAttribute('aria-label','Step '+(i+1)+': '+n);b.addEventListener('click',function(){if(i<=maxSeen)show(i)});bar.appendChild(b)});
   var dots=bar.querySelectorAll('button');
   var d=new Date();$('date').min=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
@@ -927,6 +928,8 @@ document.querySelectorAll('canvas[data-sky]').forEach(function(cv){new Mini(cv,+
     $('prevBtn').style.visibility=i===0?'hidden':'visible';
     var lastStep=i===STEPS.length-1;$('nextBtn').textContent=lastStep?(sent?'Request sent':(SHEET_URL?'Send my request':'Get my quote on WhatsApp')):'Continue';$('nextBtn').disabled=lastStep&&sent;
     $('stepcap').textContent='Step '+(i+1)+' of '+STEPS.length+' · '+STEPS[i];
+    /* phones: if the top of the planner has scrolled out of view, bring the new step back to the top */
+    if(ready){var pn=document.querySelector('#plan .panel');if(pn.getBoundingClientRect().top<70)pn.scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'})}
   }
   document.querySelectorAll('.tiles').forEach(function(g){var key=g.dataset.key,auto=g.hasAttribute('data-auto');
     g.querySelectorAll('.tile').forEach(function(t){t.setAttribute('aria-pressed','false');t.addEventListener('click',function(){
@@ -952,7 +955,7 @@ document.querySelectorAll('canvas[data-sky]').forEach(function(cv){new Mini(cv,+
     var sp=suggestPkg(),pr=sp&&PRICES[PKEY[sp]],el=$('sug');
     if(sp){el.innerHTML='';el.appendChild(document.createTextNode('Suggested: '));var b=document.createElement('b');b.textContent=sp;el.appendChild(b);el.appendChild(document.createTextNode(pr?'. From '+pr+'.':'. Quote after we check your venue.'))}
     else el.textContent='Answer a few questions and we suggest a package.'}
-  setGuests(5);show(0);
+  setGuests(5);show(0);ready=true;
 
   document.querySelectorAll('[data-pkg]').forEach(function(a){a.addEventListener('click',function(){S.pkg=a.dataset.pkg;$('pkg').value=S.pkg;if(a.dataset.event&&!S.event)selectTile('event',a.dataset.event);summary()})});
   document.querySelectorAll('[data-price]').forEach(function(el){var p=PRICES[el.dataset.price];if(p){el.querySelector('b').textContent=p}});
